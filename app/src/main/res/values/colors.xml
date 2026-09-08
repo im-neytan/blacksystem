@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores Principais -->
+    <color name="bg_main">#12151B</color>
+    <color name="bg_card">#1B2028</color>
+    <color name="bg_input">#242B35</color>
+    
+    <!-- Acentos e Realces -->
+    <color name="accent_green">#10B981</color> <!-- Verde Esmeralda Suave -->
+    <color name="accent_green_hover">#059669</color>
+    
+    <!-- Textos -->
+    <color name="text_primary">#F3F4F6</color>
+    <color name="text_secondary">#9CA3AF</color>
+    <color name="text_muted">#6B7280</color>
+    <color name="border_subtle">#2D3748</color>
+</resources>
