@@ -12,14 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
+        <!-- TELA INICIAL: LOGIN / CONEXÃO DE SERVIDOR -->
         <activity 
-            android:name=".DashboardActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity 
+            android:name=".DashboardActivity"
+            android:exported="false" />
 
         <service
             android:name=".UssdAccessibilityService"
