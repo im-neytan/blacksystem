@@ -15,6 +15,9 @@ import java.util.Queue;
 
 public class ServidorManager {
 
+    // URL central padrão da sua API na Railway
+    private static final String API_BASE_URL = "https://orion-2-production-5283.up.railway.app";
+
     public static class Pedido {
         public String id;
         public String numero;
@@ -49,14 +52,13 @@ public class ServidorManager {
             while (executando) {
                 try {
                     SharedPreferences prefs = context.getSharedPreferences("BL4CK_CONFIG", Context.MODE_PRIVATE);
-                    String baseUrl = prefs.getString("API_URL", "");
-                    String apiKey = prefs.getString("API_KEY", "");
+                    String sessionToken = prefs.getString("SESSION_TOKEN", "");
 
-                    if (!baseUrl.isEmpty()) {
-                        // 1. Baixa novos pedidos do bot para a fila interna
-                        sincronizarPedidos(baseUrl, apiKey);
+                    if (!sessionToken.isEmpty()) {
+                        // 1. Sincroniza novos pedidos do servidor para a fila interna
+                        sincronizarPedidos(sessionToken);
 
-                        // 2. Se não estiver enviando nada e a fila tiver pendências, executa o próximo
+                        // 2. Se o serviço USSD não estiver ocupado e houver pedidos, executa o próximo
                         if (!UssdAccessibilityService.isEmProcessamento() && !filaLocal.isEmpty()) {
                             Pedido proximo = filaLocal.poll();
                             if (proximo != null) {
@@ -64,7 +66,7 @@ public class ServidorManager {
                             }
                         }
                     }
-                    Thread.sleep(4000); // Checa a cada 4 segundos
+                    Thread.sleep(4000); // Consulta a cada 4 segundos
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -72,12 +74,12 @@ public class ServidorManager {
         }).start();
     }
 
-    private void sincronizarPedidos(String baseUrl, String apiKey) {
+    private void sincronizarPedidos(String sessionToken) {
         try {
-            URL url = new URL(baseUrl + "/api/pedidos/pendentes?device_id=" + getDeviceId());
+            URL url = new URL(API_BASE_URL + "/api/pedidos/pendentes?device_id=" + getDeviceId());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+            conn.setRequestProperty("Authorization", "Bearer " + sessionToken);
             conn.setConnectTimeout(5000);
 
             if (conn.getResponseCode() == 200) {
@@ -105,6 +107,13 @@ public class ServidorManager {
                         filaLocal.add(new Pedido(id, numero, megas));
                     }
                 }
+            } else if (conn.getResponseCode() == 401 || conn.getResponseCode() == 403) {
+                // Se o token for revogado ou licença expirar, desconecta o dispositivo
+                context.getSharedPreferences("BL4CK_CONFIG", Context.MODE_PRIVATE)
+                        .edit()
+                        .remove("SESSION_TOKEN")
+                        .apply();
+                pararSincronizacao();
             }
             conn.disconnect();
         } catch (Exception e) {
@@ -116,14 +125,13 @@ public class ServidorManager {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences("BL4CK_CONFIG", Context.MODE_PRIVATE);
-                String baseUrl = prefs.getString("API_URL", "");
-                String apiKey = prefs.getString("API_KEY", "");
+                String sessionToken = prefs.getString("SESSION_TOKEN", "");
 
-                URL url = new URL(baseUrl + "/api/pedidos/status");
+                URL url = new URL(API_BASE_URL + "/api/pedidos/status");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; utf-8");
-                conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+                conn.setRequestProperty("Authorization", "Bearer " + sessionToken);
                 conn.setDoOutput(true);
 
                 JSONObject body = new JSONObject();
