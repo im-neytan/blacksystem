@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_fila"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Fila ao Vivo" />
+
+    <item
+        android:id="@+id/nav_historico"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Histórico" />
+
+</menu>
