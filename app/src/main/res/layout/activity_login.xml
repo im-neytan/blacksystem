@@ -3,170 +3,115 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_main"
+    android:background="#12151B"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="28dp">
 
-        <!-- CABEÇALHO -->
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <!-- TÍTULO DO APP -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
+            android:letterSpacing="0.05"
+            android:text="BL4CK SYSTEM"
+            android:textColor="#F3F4F6"
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="36dp"
+            android:text="Conexão do Gateway Android"
+            android:textColor="#9CA3AF"
+            android:textSize="14sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BL4CK SYSTEM"
-                    android:textColor="@color/text_primary"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtServerStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="● Conectado ao Servidor"
-                    android:textColor="@color/accent_green"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchGateway"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:checked="true"
-                android:text="Gateway "
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
-        </RelativeLayout>
-
-        <!-- CARTÃO 1: DETALHES DO DISPOSITIVO -->
+        <!-- CARTÃO DE EMPARELHAMENTO -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/bg_card"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="1dp">
+            app:cardBackgroundColor="#1B2028"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="24dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:letterSpacing="0.05"
-                    android:text="DISPOSITIVO ATIVO"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp"
+                    android:text="Ativar Dispositivo"
+                    android:textColor="#F3F4F6"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/txtCartaoStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="SIM 1 (Vodacom)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtDeviceId"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="ID: Obtendo identificador..."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:layout_marginBottom="24dp"
+                    android:text="Insira o código de 6 dígitos gerado pelo seu Bot no WhatsApp."
+                    android:textColor="#9CA3AF"
+                    android:textSize="13sp" />
+
+                <!-- CAMPO DO CÓDIGO DE EMPARELHAMENTO -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:textColorHint="#9CA3AF"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="#10B981"
+                    app:hintTextColor="#10B981">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtCodigoEmparelhamento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="Ex: BK-8921"
+                        android:inputType="textCapCharacters"
+                        android:maxLength="7"
+                        android:textColor="#F3F4F6"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- BOTÃO CONECTAR -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEmparelhar"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:backgroundTint="#10B981"
+                    android:text="Conectar Dispositivo"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="10dp" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- CARTÃO 2: FILA DE PROCESSAMENTO -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardBackgroundColor="@color/bg_card"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.05"
-                        android:text="FILA DE PROCESSAMENTO"
-                        android:textColor="@color/text_muted"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtFilaCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="0 Pedidos"
-                        android:textColor="@color/accent_green"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/txtStatusProcessamento"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Aguardando novos pedidos..."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:indeterminate="true"
-                    android:indeterminateTint="@color/accent_green" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- BOTÃO DE ALTERAR SERVIDOR -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDesconectar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Alterar Servidor / Sair"
-            android:textColor="@color/text_secondary"
-            app:cornerRadius="10dp"
-            app:strokeColor="@color/border_subtle" />
+            android:layout_marginTop="28dp"
+            android:text="Envie .conectar no WhatsApp para receber o código"
+            android:textColor="#6B7280"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </ScrollView>
