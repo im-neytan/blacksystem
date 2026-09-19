@@ -41,7 +41,8 @@ public class UssdAccessibilityService extends AccessibilityService {
         timeoutRunnable = () -> {
             if (emProcessamento) {
                 emProcessamento = false;
-                ServidorManager.atualizarStatusPedido(idPedidoAtual, "FALHA", "Timeout no menu USSD");
+                // Passa o 'context' recebido como 1º argumento
+                ServidorManager.atualizarStatusPedido(context, idPedidoAtual, "FALHA", "Timeout no menu USSD");
             }
         };
         handler.postDelayed(timeoutRunnable, 35000);
@@ -119,8 +120,8 @@ public class UssdAccessibilityService extends AccessibilityService {
         // 1. Fechar pop-up atual no celular
         fecharDialogoSeExistir(rootNode);
 
-        // 2. Enviar dados para o servidor Node.js
-        ServidorManager.atualizarStatusPedido(idPedidoAtual, statusFinal, respostaOperadora);
+        // 2. Enviar dados para o servidor Node.js (passando 'this' como Context)
+        ServidorManager.atualizarStatusPedido(this, idPedidoAtual, statusFinal, respostaOperadora);
 
         // 3. Aguarda 8 segundos de intervalo antes de permitir o próximo pedido da fila
         handler.postDelayed(() -> {
