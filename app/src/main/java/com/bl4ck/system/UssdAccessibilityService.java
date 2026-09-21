@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +18,7 @@ public class UssdAccessibilityService extends AccessibilityService {
     private static String idPedidoAtual = "";
     private static String numeroDestino = "";
     private static String megasParaEnviar = "";
-    private static boolean emProcessamento = false;
+    private static volatile boolean emProcessamento = false;
     private static int etapaAtual = 0;
     private static long tempoUltimaAcao = 0;
 
@@ -28,7 +29,13 @@ public class UssdAccessibilityService extends AccessibilityService {
         return emProcessamento;
     }
 
-    public static void iniciarEnvio(Context context, String pedidoId, String numero, String megas) {
+    public static synchronized void iniciarEnvio(Context context, String pedidoId, String numero, String megas) {
+        if (emProcessamento) return;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M
+                && context.checkSelfPermission(android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ServidorManager.atualizarStatusPedido(context, pedidoId, "FALHA", "Permissão de chamada não concedida");
+            return;
+        }
         idPedidoAtual = pedidoId;
         numeroDestino = numero;
         megasParaEnviar = megas;
@@ -50,7 +57,13 @@ public class UssdAccessibilityService extends AccessibilityService {
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:*162%23"));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        try {
+            context.startActivity(intent);
+        } catch (Exception e) {
+            handler.removeCallbacks(timeoutRunnable);
+            emProcessamento = false;
+            ServidorManager.atualizarStatusPedido(context, pedidoId, "FALHA", "Não foi possível iniciar a chamada USSD");
+        }
     }
 
     @Override

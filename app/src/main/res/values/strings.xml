@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BL4CK SYSTEM</string>
+    <string name="accessibility_service_label">BL4CK SYSTEM — Automação USSD</string>
+    <string name="accessibility_service_description">Automatiza somente as etapas USSD iniciadas pelo gateway autorizado.</string>
+</resources>

@@ -7,12 +7,11 @@
     android:background="#0D0D0D"
     tools:context=".DashboardActivity">
 
-    <!-- CONTEÚDO ROLÁVEL (PAINEL + FRAGMENTOS) -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
-        android:fillViewport="true">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -144,15 +143,17 @@
                 android:textColor="#FFCC00"
                 android:textSize="12sp" />
 
-            <!-- ÁREA ONDE A FILA E O HISTÓRICO SERÃO CARREGADOS -->
-            <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp" />
-
         </LinearLayout>
-    </ScrollView>
+
+        <!-- ÁREA ONDE A FILA E O HISTÓRICO SÃO CARREGADOS -->
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
 
     <!-- BARRA INFERIOR DE NAVEGAÇÃO -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
