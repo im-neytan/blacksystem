@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_CALL_PHONE = 1001;
+    // Garanta que BuildConfig.API_BASE_URL não termine com barra extra
     private static final String API_CENTRAL_URL = BuildConfig.API_BASE_URL + "/api/emparelhar";
 
     private TextInputEditText edtCodigoEmparelhamento;
@@ -79,35 +80,61 @@ public class LoginActivity extends AppCompatActivity {
                 conn = (HttpURLConnection) new URL(API_CENTRAL_URL).openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-                conn.setConnectTimeout(8000);
-                conn.setReadTimeout(10000);
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(12000);
                 conn.setDoOutput(true);
 
                 JSONObject body = new JSONObject();
                 body.put("codigo", codigo);
                 body.put("device_id", deviceId);
+                
                 try (OutputStream os = conn.getOutputStream()) {
                     os.write(body.toString().getBytes(StandardCharsets.UTF_8));
                 }
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
                     StringBuilder response = new StringBuilder();
                     try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                         String line;
                         while ((line = br.readLine()) != null) response.append(line);
                     }
-                    String token = new JSONObject(response.toString()).optString("token", "");
-                    if (token.isEmpty()) throw new IllegalStateException("Resposta do servidor sem token");
+                    
+                    JSONObject jsonResponse = new JSONObject(response.toString());
+                    String token = jsonResponse.optString("token", jsonResponse.optString("session_token", ""));
+                    
+                    if (token.isEmpty()) {
+                        mostrarErro("Servidor não retornou um token válido.");
+                        return;
+                    }
+
                     getSharedPreferences("BL4CK_CONFIG", MODE_PRIVATE).edit().putString("SESSION_TOKEN", token).apply();
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Dispositivo emparelhado com sucesso.", Toast.LENGTH_SHORT).show();
                         abrirDashboard();
                     });
                 } else {
-                    mostrarErro("Código inválido, expirado ou serviço indisponível.");
+                    // Tenta ler a mensagem de erro retornada pela API
+                    StringBuilder errorResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                            conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream(), StandardCharsets.UTF_8))) {
+                        String line;
+                        while ((line = br.readLine()) != null) errorResponse.append(line);
+                    } catch (Exception ignored) {}
+
+                    String msgErro = "Código inválido ou serviço indisponível (" + responseCode + ")";
+                    if (errorResponse.length() > 0) {
+                        try {
+                            JSONObject errJson = new JSONObject(errorResponse.toString());
+                            msgErro = errJson.optString("message", errJson.optString("error", msgErro));
+                        } catch (Exception ignored) {}
+                    }
+                    mostrarErro(msgErro);
                 }
             } catch (Exception e) {
-                mostrarErro("Não foi possível conectar ao servidor. Verifique a internet.");
+                mostrarErro("Erro de conexão: " + e.getLocalizedMessage());
             } finally {
                 if (conn != null) conn.disconnect();
             }
